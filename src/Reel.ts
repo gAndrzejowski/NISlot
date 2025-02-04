@@ -1,19 +1,19 @@
-import { Container, Rectangle, Sprite } from "pixi.js";
-import { Symbols } from './Symbols';
+import { Container, PointData, Size, Sprite } from "pixi.js";
+import { Symbol } from './config';
 
 export class Reel extends Container {
 
-    constructor(rect: Rectangle, symbolsCount: number) {
+    constructor(position: PointData, size: Size, symbolsCount: number) {
         super();
-        this.position = {x: rect.x, y: rect.y};
-        this.width = rect.width;
-        this.height = rect.height;
+        this.position = position;
+        this.width = size.width;
+        this.height = size.height;
         this._symbolsCount = symbolsCount
     }
 
     private readonly _symbolsCount: number;
 
-    public drawSymbols(...syms: [Symbols]) {
+    public drawSymbols(syms: Array<Symbol>) {
         this.removeChildren();
         syms.forEach((sym, index) => {
             const symbol = Sprite.from(sym);

@@ -2,11 +2,8 @@ import { Application, Assets, Sprite, Container } from 'pixi.js';
 import { Machine } from "./src/Machine";
 import { urls } from "./img";
 import { SpinButton } from "./src/SpinButton";
-
-const screen = {
-    width: 1920,
-    height: 1080
-};
+import { screen } from './src/config';
+import { Outcome } from './src/Outcome';
 
 class MainScene extends Container {
     private _machine: Machine;
@@ -33,6 +30,10 @@ class MainScene extends Container {
 
         this._machine = machine;
         this._spinButton = spinButton;
+    }
+
+    public testDrive() {
+        this._machine.displayResult(Outcome.resolve())
     }
 
     update(dt) {
@@ -66,7 +67,9 @@ class Game {
 
     const main = new MainScene();
     game.setScene(main);
+    main.testDrive();
 
+    
     app.ticker.add(({deltaTime}) => {
         main.update(deltaTime);
     });
