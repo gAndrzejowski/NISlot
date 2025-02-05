@@ -6,10 +6,13 @@ export class Reel extends Container {
     constructor(position: PointData, size: Size, symbolsCount: number) {
         super();
         this.position = position;
-        this.width = size.width;
-        this.height = size.height;
-        this._symbolsCount = symbolsCount
+        this._areaWidth = size.width;
+        this._areaHeight = size.height;
+        this._symbolsCount = symbolsCount;
     }
+
+    private _areaWidth: number;
+    private _areaHeight: number;
 
     private readonly _symbolsCount: number;
 
@@ -17,8 +20,8 @@ export class Reel extends Container {
         this.removeChildren();
         syms.forEach((sym, index) => {
             const symbol = Sprite.from(sym);
-            symbol.anchor.set(0.5);
-            symbol.position.set(this.width/2, this.height / this._symbolsCount * index);
+            symbol.anchor.set(0.5, 0);
+            symbol.position.set(this._areaWidth/2, this._areaHeight / this._symbolsCount * index);
             this.addChild(symbol)
         })
     }

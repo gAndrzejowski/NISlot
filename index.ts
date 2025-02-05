@@ -20,20 +20,27 @@ class MainScene extends Container {
         reels.position.set(screen.width * 0.5, screen.height * 0.5);
         this.addChild(reels);
 
-        const machine = new Machine();
+        const machine = new Machine({ width: reels.width, height: reels.height });
         machine.position.set(screen.width * 0.5 - reels.width * 0.5, screen.height * 0.5 - reels.height * 0.5);
         this.addChild(machine);
+
+        console.log(`reels RECT: ${reels.getBounds()}`)
+        console.log(`machine position: ${machine.x} - ${machine.y}`)
 
         const spinButton = new SpinButton();
         spinButton.position.set(screen.width * 0.85, screen.height * 0.85);
         this.addChild(spinButton);
+        spinButton.setEventHandlers(() => this.setResult())
 
         this._machine = machine;
         this._spinButton = spinButton;
+
+        this.setResult();
     }
 
-    public testDrive() {
+    public setResult() {
         this._machine.displayResult(Outcome.resolve())
+        console.log('result set')
     }
 
     update(dt) {
@@ -59,6 +66,7 @@ class Game {
 
 (async () => {
     const app = new Application();
+    globalThis.__PIXI_APP__ = app;
     await app.init({width: screen.width, height: screen.height});
     document.body.appendChild(app.canvas);
 
@@ -67,7 +75,6 @@ class Game {
 
     const main = new MainScene();
     game.setScene(main);
-    main.testDrive();
 
     
     app.ticker.add(({deltaTime}) => {
