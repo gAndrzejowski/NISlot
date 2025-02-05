@@ -1,5 +1,5 @@
 import { Container, PointData, Size, Sprite } from "pixi.js";
-import { Symbol } from './config';
+import { Sym } from './config';
 
 export class Reel extends Container {
 
@@ -17,7 +17,7 @@ export class Reel extends Container {
 
     private readonly _symbolsCount: number;
 
-    public drawSymbols(syms: Array<Symbol>) {
+    public drawSymbols(syms: Array<Sym>) {
         this.removeChildren();
         const symbolHeight = this._areaHeight / this._symbolsCount;
         syms.forEach((sym, index) => {

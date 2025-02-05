@@ -1,6 +1,6 @@
-import { Symbol } from "./config";
+import { Sym } from "./config";
 
-export type SpinOutcome = Symbol[][]
+export type SpinOutcome = Sym[][]
 
 export class Outcome {
     constructor() {}
@@ -9,13 +9,13 @@ export class Outcome {
         const columns = 5;
         const rows = 3;
         const symbols = [
-            Symbol.HIGH1,
-            Symbol.HIGH2,
-            Symbol.HIGH3,
-            Symbol.LOW1,
-            Symbol.LOW2,
-            Symbol.LOW3,
-            Symbol.LOW4
+            Sym.HIGH1,
+            Sym.HIGH2,
+            Sym.HIGH3,
+            Sym.LOW1,
+            Sym.LOW2,
+            Sym.LOW3,
+            Sym.LOW4
         ];
 
         const outcome: SpinOutcome = [];

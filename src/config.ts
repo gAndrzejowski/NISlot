@@ -11,7 +11,7 @@ export const REEL_HEIGHT_PX = 578;
 export const SPIN_DURATION_MS = 1000;
 export const SPIN_RESOLVE_DURATION_MS = 500;
 
-export enum Symbol {
+export enum Sym {
     HIGH1 = 'high1',
     HIGH2 = 'high2',
     HIGH3 = 'high3',
