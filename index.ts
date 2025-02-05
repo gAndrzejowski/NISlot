@@ -2,12 +2,14 @@ import { Application, Assets, Sprite, Container } from 'pixi.js';
 import { Machine } from "./src/Machine";
 import { urls } from "./img";
 import { SpinButton } from "./src/SpinButton";
-import { screen } from './src/config';
+import { screen, SPIN_RESOLVE_DURATION_MS } from './src/config';
 import { Outcome } from './src/Outcome';
+import { AppEvents, AppState, StateManager } from './src/StateManager';
 
 class MainScene extends Container {
     private _machine: Machine;
     private _spinButton: SpinButton;
+    private _stateManager: StateManager;
 
     constructor() {
         super();
@@ -20,32 +22,39 @@ class MainScene extends Container {
         reels.position.set(screen.width * 0.5, screen.height * 0.5);
         this.addChild(reels);
 
-        const machine = new Machine({ width: reels.width, height: reels.height });
+        this._stateManager = new StateManager();
+
+        const machine = new Machine({ width: reels.width, height: reels.height }, this._stateManager);
         machine.position.set(screen.width * 0.5 - reels.width * 0.5, screen.height * 0.5 - reels.height * 0.5);
         this.addChild(machine);
 
-        console.log(`reels RECT: ${reels.getBounds()}`)
-        console.log(`machine position: ${machine.x} - ${machine.y}`)
-
-        const spinButton = new SpinButton();
+        const spinButton = new SpinButton(this._stateManager);
         spinButton.position.set(screen.width * 0.85, screen.height * 0.85);
         this.addChild(spinButton);
-        spinButton.setEventHandlers(() => this.setResult())
+        spinButton.setEventHandlers()
 
         this._machine = machine;
         this._spinButton = spinButton;
 
         this.setResult();
+        this._stateManager.on(AppEvents.SPIN_START, this.scheduleResolve.bind(this))
+        this._stateManager.on(AppEvents.SPIN_RESOLVING_END, this.setResult.bind(this))
     }
+
+    private scheduleResolve() {
+        this._stateManager.scheduleState(AppState.SPIN_RESOLVING, SPIN_RESOLVE_DURATION_MS);
+
+    }
+
 
     public setResult() {
         this._machine.displayResult(Outcome.resolve())
-        console.log('result set')
     }
 
     update(dt) {
         this._machine.update(dt);
         this._spinButton.update(dt);
+        this._stateManager.update(dt);
     }
 }
 
@@ -77,7 +86,7 @@ class Game {
     game.setScene(main);
 
     
-    app.ticker.add(({deltaTime}) => {
-        main.update(deltaTime);
+    app.ticker.add(({deltaMS}) => {
+        main.update(deltaMS);
     });
 })();
