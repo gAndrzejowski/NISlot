@@ -47,6 +47,10 @@ export class StateManager extends EventEmitter<AppEvents> {
         this.emit(`${state}Start` as AppEvents);
     }
 
+    public triggerWin(amount: number): void {
+        this.emit(AppEvents.WIN_TRIGGERED, amount);
+    }
+
     public update(dt) {
         if (this.stateQueue.length === 0) {
             this.setState(AppState.IDLE);

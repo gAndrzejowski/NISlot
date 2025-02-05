@@ -1,5 +1,5 @@
 import { Container, Text } from "pixi.js";
-import { StateManager } from "./StateManager";
+import { AppEvents, StateManager } from "./StateManager";
 
 enum WinCounterStates {
     HIDDEN,
@@ -46,6 +46,9 @@ export class WinCounter extends Container {
         this._winExclamation.anchor.set(0.5);
         this._winExclamation.position.set(COUNTER_WIDTH / 2, this._winExclamation.height / 2);
         this._winExclamation.scale = 0;
+
+        this._stateManager.on(AppEvents.WIN_TRIGGERED, this.countupWin.bind(this));
+        this._stateManager.on(AppEvents.IDLE_END, this.clearWinCountup.bind(this));
     }
 
     private _currentValue: number;
