@@ -9,6 +9,7 @@ export class Reel extends Container {
         this._areaWidth = size.width;
         this._areaHeight = size.height;
         this._symbolsCount = symbolsCount;
+        console.log(this.position)
     }
 
     private _areaWidth: number;
@@ -18,10 +19,11 @@ export class Reel extends Container {
 
     public drawSymbols(syms: Array<Symbol>) {
         this.removeChildren();
+        const symbolHeight = this._areaHeight / this._symbolsCount;
         syms.forEach((sym, index) => {
             const symbol = Sprite.from(sym);
-            symbol.anchor.set(0.5, 0);
-            symbol.position.set(this._areaWidth/2, this._areaHeight / this._symbolsCount * index);
+            symbol.anchor.set(0.5);
+            symbol.position.set(this._areaWidth/2, this._areaHeight / 2 + symbolHeight * (index - this._symbolsCount/2));
             this.addChild(symbol)
         })
     }

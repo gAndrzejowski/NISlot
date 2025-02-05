@@ -4,8 +4,6 @@ export enum AppState {
     IDLE = 'idle',
     SPIN = 'spin',
     SPIN_RESOLVING = 'spinResolving',
-    WIN_SYMBOL_DISPLAY = 'winSymbolDisplay',
-    WIN_COUNTUP = 'winCountup',
 }
 
 export enum AppEvents {
@@ -15,10 +13,7 @@ export enum AppEvents {
     SPIN_END = 'spinEnd',
     SPIN_RESOLVING_START = 'spinResolvingStart',
     SPIN_RESOLVING_END = 'spinResolvingEnd',
-    WIN_SYMBOL_DISPLAY_START = 'winSymbolDisplayStart',
-    WIN_SYMBOL_DISPLAY_END = 'winSymbolDisplayEnd',
-    WIN_COUNTUP_START = 'winCountupStart',
-    WIN_COUNTUP_END = 'winCountupEnd',
+    WIN_TRIGGERED = 'winTriggered',
 }
 
 export type ScheduledStateChange = {

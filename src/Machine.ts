@@ -1,6 +1,6 @@
-import {Container, Size} from "pixi.js";
+import {Assets, Container, Size} from "pixi.js";
 import { Reel } from "./Reel";
-import { REEL_SIZE, REELS_COUNT } from "./config";
+import { REEL_HEIGHT_PX, REEL_SIZE, REEL_WIDTH_PX, REELS_COUNT } from "./config";
 import { SpinOutcome } from "./Outcome";
 import { StateManager } from "./StateManager";
 
@@ -10,7 +10,6 @@ export class Machine extends Container {
     constructor(size: Size, stateManager: StateManager) {
         super();
         this._reelAreaDimensions = size;
-        this._setupReels();
         this._stateManager = stateManager;
     }
 
@@ -18,15 +17,26 @@ export class Machine extends Container {
     private _reelAreaDimensions: Size
     private _stateManager: StateManager
 
-    private _setupReels() {
-        const width = this._reelAreaDimensions.width / REELS_COUNT, height = this._reelAreaDimensions.height;
+    public init() {
+        this._setupReels();
+    }
 
+    private _setupReels() {
+        const center  = {
+            x: this._reelAreaDimensions.width / 2,
+            y: this._reelAreaDimensions.height / 2
+        }
+        const width = REEL_WIDTH_PX
+        const height = REEL_HEIGHT_PX
 
         this._reels = [];
         for (let i = 0; i < REELS_COUNT; i++) {
-            const reel = 
+            const reel =
                 new Reel(
-                    { x: width * i, y: 0, },
+                    {
+                        x: center.x + width * (i - REELS_COUNT / 2),
+                        y: center.y - 0.5 * height
+                    },
                     { width, height }
                     , REEL_SIZE)
             this._reels.push(reel)

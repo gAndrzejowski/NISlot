@@ -22,6 +22,7 @@ export class SpinButton extends Container {
 
     setEventHandlers() {
         this._button.eventMode = 'static';
+        this._button.interactive = true;
         this._button.cursor = 'pointer';
         this._button.on('pointertap', this.trySpin.bind(this))
         this._button.on('pointerover', () => this.setEnabledButtonTexture(this._buttonHover));
@@ -49,7 +50,6 @@ export class SpinButton extends Container {
     private setEnabledButtonTexture(texture: Texture) {
         if (this._isDisabled || this._button.texture === texture) return;
         this._button.texture = texture;
-        console.log('button changed to', texture)
     }
 
     private _isDisabled: boolean;

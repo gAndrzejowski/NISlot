@@ -25,7 +25,8 @@ class MainScene extends Container {
         this._stateManager = new StateManager();
 
         const machine = new Machine({ width: reels.width, height: reels.height }, this._stateManager);
-        machine.position.set(screen.width * 0.5 - reels.width * 0.5, screen.height * 0.5 - reels.height * 0.5);
+        machine.position.set(reels.position.x - reels.width * 0.5, reels.position.y - reels.height * 0.5);
+        machine.init();
         this.addChild(machine);
 
         const spinButton = new SpinButton(this._stateManager);
