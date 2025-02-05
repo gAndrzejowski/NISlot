@@ -5,11 +5,13 @@ import { SpinButton } from "./src/SpinButton";
 import { screen, SPIN_RESOLVE_DURATION_MS } from './src/config';
 import { Outcome } from './src/Outcome';
 import { AppEvents, AppState, StateManager } from './src/StateManager';
+import { COUNTER_HEIGHT, COUNTER_WIDTH, WinCounter } from './src/WinCounter';
 
 class MainScene extends Container {
     private _machine: Machine;
     private _spinButton: SpinButton;
     private _stateManager: StateManager;
+    private _winCounter: WinCounter;
 
     constructor() {
         super();
@@ -32,10 +34,15 @@ class MainScene extends Container {
         const spinButton = new SpinButton(this._stateManager);
         spinButton.position.set(screen.width * 0.85, screen.height * 0.85);
         this.addChild(spinButton);
-        spinButton.setEventHandlers()
+        spinButton.setEventHandlers();
+
+        const winCounter = new WinCounter(this._stateManager);
+        winCounter.position.set(screen.width * 0.5 - COUNTER_WIDTH * 0.5, screen.height * 0.85 - COUNTER_HEIGHT * 0.5);
+        this.addChild(winCounter);
 
         this._machine = machine;
         this._spinButton = spinButton;
+        this._winCounter = winCounter;
 
         this.setResult();
         this._stateManager.on(AppEvents.SPIN_START, this.scheduleResolve.bind(this))

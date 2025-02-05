@@ -10,8 +10,8 @@ enum WinCounterStates {
 const BIG_WIN_THRESHOLD = 2;
 const SUPER_WIN_THRESHOLD = 5;
 const MEGA_WIN_THRESHOLD = 15;
-const COUNTER_WIDTH = 200;
-const COUNTER_HEIGHT = 100
+export const COUNTER_WIDTH = 200;
+export const COUNTER_HEIGHT = 150;
 const BIG_WIN_TEXT = 'Big Win!';
 const SUPER_WIN_TEXT = 'Super Win!!!';
 const MEGA_WIN_TEXT = 'Mega Win!!!!!!1'
@@ -27,9 +27,10 @@ export class WinCounter extends Container {
         this._counter = new Text({
             text: this._currentValue.toFixed(2),
             style: {
-              fontSize: 20,  
+              fontSize: 40,
+              letterSpacing: 5,
               fontFamily: 'Helvetica',
-              fill: 'goldenrodyellow',
+              fill: '#DAA520',
             }
         })
         this._counter.anchor.set(0.5);
@@ -38,14 +39,17 @@ export class WinCounter extends Container {
         this._winExclamation = new Text({
             text: BIG_WIN_TEXT,
             style: {
-                fontSize: 28,
+                fontSize: 80,
                 fontFamily: 'Helvetica',
-                fill: 'goldenrodyellow'
+                fill: '#DAA520'
             }
         });
         this._winExclamation.anchor.set(0.5);
         this._winExclamation.position.set(COUNTER_WIDTH / 2, this._winExclamation.height / 2);
         this._winExclamation.scale = 0;
+
+        this.addChild(this._counter);
+        this.addChild(this._winExclamation);
 
         this._stateManager.on(AppEvents.WIN_TRIGGERED, this.countupWin.bind(this));
         this._stateManager.on(AppEvents.IDLE_END, this.clearWinCountup.bind(this));
