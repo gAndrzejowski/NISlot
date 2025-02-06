@@ -1,4 +1,4 @@
-import { Sym } from "./config";
+import { REEL_SIZE, REELS_COUNT, Sym } from "./config";
 
 export type SpinOutcome = Sym[][]
 
@@ -6,8 +6,8 @@ export class Outcome {
     constructor() {}
 
     static resolve(): SpinOutcome {
-        const columns = 5;
-        const rows = 3;
+        const columns = REELS_COUNT;
+        const rows = REEL_SIZE;
         const symbols = [
             Sym.HIGH1,
             Sym.HIGH2,

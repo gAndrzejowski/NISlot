@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Nailed It! Games Tech assignment",
   "scripts": {
-    "serve": "parcel index.html --port=8080"
+    "serve": "parcel index.html --port=8080",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,9 @@
   },
   "devDependencies": {
     "@parcel/resolver-glob": "^2.12.0",
-    "parcel": "^2.12.0"
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "parcel": "^2.12.0",
+    "ts-jest": "^29.2.5"
   }
 }

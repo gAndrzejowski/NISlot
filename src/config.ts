@@ -5,6 +5,8 @@ export const screen = {
 
 export const REEL_SIZE = 3;
 export const REELS_COUNT = 5;
+export const MIN_WINNING_COMBINATION_LENGTH = 3;
+
 export const REEL_WIDTH_PX = 200;
 export const REEL_HEIGHT_PX = 578;
 
