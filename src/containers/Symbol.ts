@@ -21,6 +21,7 @@ export class Symbol extends Container {
         this._sprite.y = height/2;
         this.addChild(this._sprite);
         this._stateManager = stateManager;
+        this._init();
     }
 
     private _init() {

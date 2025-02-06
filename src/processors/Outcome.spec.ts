@@ -1,4 +1,4 @@
-import { REEL_SIZE, REELS_COUNT } from "./config";
+import { REEL_SIZE, REELS_COUNT } from "../config";
 import { Outcome } from "./Outcome";
 
 describe('Outcome generator', () => {
