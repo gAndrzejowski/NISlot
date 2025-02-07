@@ -47,8 +47,9 @@ export class StateManager extends EventEmitter<AppEvents> {
         this.emit(`${state}Start` as AppEvents);
     }
 
-    public triggerWin(amount: number): void {
-        this.emit(AppEvents.WIN_TRIGGERED, amount);
+    public triggerWin(winningCombinations: Set<string>, amount: number): void {
+        this.emit(AppEvents.WIN_TRIGGERED, {winningCombinations, amount});
+        console.log('win triggered', winningCombinations, amount)
     }
 
     public update(dt) {

@@ -1,5 +1,5 @@
 import { Container, Text } from "pixi.js";
-import { AppEvents, StateManager } from "./StateManager";
+import { AppEvents, StateManager } from "../StateManager";
 
 enum WinCounterStates {
     HIDDEN,

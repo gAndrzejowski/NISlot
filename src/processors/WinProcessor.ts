@@ -1,6 +1,6 @@
-import { MIN_WINNING_COMBINATION_LENGTH, REELS_COUNT, Sym } from "./config";
+import { MIN_WINNING_COMBINATION_LENGTH, REELS_COUNT, Sym } from "../config";
 import { SpinOutcome } from "./Outcome";
-import { payoutStructure } from "./payoutStructure";
+import { payoutStructure } from "../payoutStructure";
 
 export class WinProcessor {
 

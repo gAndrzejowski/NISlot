@@ -1,4 +1,4 @@
-import { REEL_SIZE, REELS_COUNT, Sym } from "./config";
+import { REEL_SIZE, REELS_COUNT, Sym } from "../config";
 
 export type SpinOutcome = Sym[][]
 

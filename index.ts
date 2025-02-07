@@ -1,11 +1,12 @@
 import { Application, Assets, Sprite, Container } from 'pixi.js';
-import { Machine } from "./src/Machine";
+import { Machine } from "./src/containers/Machine";
 import { urls } from "./img";
-import { SpinButton } from "./src/SpinButton";
+import { SpinButton } from "./src/containers/SpinButton";
 import { screen, SPIN_RESOLVE_DURATION_MS } from './src/config';
-import { Outcome } from './src/Outcome';
+import { Outcome } from './src/processors/Outcome';
 import { AppEvents, AppState, StateManager } from './src/StateManager';
-import { COUNTER_HEIGHT, COUNTER_WIDTH, WinCounter } from './src/WinCounter';
+import { WinProcessor } from './src/processors/WinProcessor';
+import { WinCounter, COUNTER_HEIGHT, COUNTER_WIDTH } from './src/containers/WinCounter';
 
 class MainScene extends Container {
     private _machine: Machine;
@@ -51,6 +52,16 @@ class MainScene extends Container {
 
     private scheduleResolve() {
         this._stateManager.scheduleState(AppState.SPIN_RESOLVING, SPIN_RESOLVE_DURATION_MS);
+        const outcome = Outcome.resolve();
+        const win = new WinProcessor(outcome);
+        const winAmount = win.winTotal;
+        if (winAmount) {
+            const winHandler = () => {
+                this._stateManager.triggerWin(win.winningCombinations, winAmount);
+                this._stateManager.off(AppEvents.IDLE_START, winHandler);
+            }
+            this._stateManager.on(AppEvents.IDLE_START, winHandler);
+        }
 
     }
 

@@ -1,8 +1,8 @@
 import {Assets, Container, Size} from "pixi.js";
 import { Reel } from "./Reel";
-import { REEL_HEIGHT_PX, REEL_SIZE, REEL_WIDTH_PX, REELS_COUNT } from "./config";
-import { SpinOutcome } from "./Outcome";
-import { StateManager } from "./StateManager";
+import { REEL_HEIGHT_PX, REEL_SIZE, REEL_WIDTH_PX, REELS_COUNT } from "../config";
+import { SpinOutcome } from "../processors/Outcome";
+import { StateManager } from "../StateManager";
 
 export class Machine extends Container {
     
