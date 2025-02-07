@@ -77,6 +77,7 @@ class MainScene extends Container {
         this._machine.update(dt);
         this._spinButton.update(dt);
         this._stateManager.update(dt);
+        this._winCounter.update(dt);
     }
 }
 

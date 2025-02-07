@@ -10,6 +10,7 @@ enum WinCounterStates {
 const BIG_WIN_THRESHOLD = 2;
 const SUPER_WIN_THRESHOLD = 5;
 const MEGA_WIN_THRESHOLD = 15;
+const COUNTUP_UNIT_TIME = 500;
 export const COUNTER_WIDTH = 200;
 export const COUNTER_HEIGHT = 150;
 const BIG_WIN_TEXT = 'Big Win!';
@@ -56,16 +57,25 @@ export class WinCounter extends Container {
     }
 
     private _currentValue: number;
+    private _targetValue: number;
     private _counter: Text;
     private _winExclamation: Text;
     private _state: WinCounterStates;
     private _stateManager: StateManager;
+    private _countupEnd: () => void;
 
-    private countupWin(targetValue = 0) {
+    private async countupWin({amount}) {
        this.visible = true;
        this._state = WinCounterStates.COUNTUP;
-       console.log('countup win');
+       this._targetValue = amount;
+       await this.waitForCountupEnd();
        this.displayWinIdle();
+    }
+
+    private waitForCountupEnd(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            this._countupEnd = resolve;
+        })
     }
 
     private displayBigWin() {
@@ -93,6 +103,14 @@ export class WinCounter extends Container {
     }
 
     public update(dt) {
+        if (this._state === WinCounterStates.COUNTUP) {
+            this._currentValue += dt/COUNTUP_UNIT_TIME;
+            if (this._currentValue >= this._targetValue) {
+                this._currentValue = this._targetValue;
+                this._countupEnd();
+            }
+            this._counter.text = this._currentValue.toFixed(2);
+        }
 
     }
 
