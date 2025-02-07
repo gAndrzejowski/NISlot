@@ -3,7 +3,7 @@ import { Machine } from "./src/containers/Machine";
 import { urls } from "./img";
 import { SpinButton } from "./src/containers/SpinButton";
 import { screen, SPIN_RESOLVE_DURATION_MS } from './src/config';
-import { Outcome } from './src/processors/Outcome';
+import { Outcome, SpinOutcome } from './src/processors/Outcome';
 import { AppEvents, AppState, StateManager } from './src/StateManager';
 import { WinProcessor } from './src/processors/WinProcessor';
 import { WinCounter, COUNTER_HEIGHT, COUNTER_WIDTH } from './src/containers/WinCounter';
@@ -13,6 +13,7 @@ class MainScene extends Container {
     private _spinButton: SpinButton;
     private _stateManager: StateManager;
     private _winCounter: WinCounter;
+    private _currentOutcome: SpinOutcome;
 
     constructor() {
         super();
@@ -45,20 +46,22 @@ class MainScene extends Container {
         this._spinButton = spinButton;
         this._winCounter = winCounter;
 
-        this.setResult();
+        this._currentOutcome = Outcome.resolve();
+        this.displayResult();
         this._stateManager.on(AppEvents.SPIN_START, this.scheduleResolve.bind(this))
-        this._stateManager.on(AppEvents.SPIN_RESOLVING_END, this.setResult.bind(this))
+        this._stateManager.on(AppEvents.SPIN_RESOLVING_END, this.displayResult.bind(this))
     }
 
     private scheduleResolve() {
         this._stateManager.scheduleState(AppState.SPIN_RESOLVING, SPIN_RESOLVE_DURATION_MS);
-        const outcome = Outcome.resolve();
-        const win = new WinProcessor(outcome);
+        this._currentOutcome = Outcome.resolve();
+        const win = new WinProcessor(this._currentOutcome);
         const winAmount = win.winTotal;
-        if (winAmount) {
+        if (winAmount > 0) {
             const winHandler = () => {
                 this._stateManager.triggerWin(win.winningCombinations, winAmount);
                 this._stateManager.off(AppEvents.IDLE_START, winHandler);
+                this.displayResult();
             }
             this._stateManager.on(AppEvents.IDLE_START, winHandler);
         }
@@ -66,8 +69,8 @@ class MainScene extends Container {
     }
 
 
-    public setResult() {
-        this._machine.displayResult(Outcome.resolve())
+    public displayResult() {
+        this._machine.displayResult(this._currentOutcome)
     }
 
     update(dt) {

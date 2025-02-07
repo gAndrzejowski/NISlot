@@ -24,7 +24,7 @@ export const payoutStructure = {
         [4]: 0.9,
         [5]: 3
     },
-    high1: {
+    high3: {
         [3]: 0.8,
         [4]: 2.4,
         [5]: 8
@@ -34,7 +34,7 @@ export const payoutStructure = {
         [4]: 3.6,
         [5]: 12,
     },
-    high3: {
+    high1: {
         [3]: 1.6,
         [4]: 4.8,
         [5]: 16,
