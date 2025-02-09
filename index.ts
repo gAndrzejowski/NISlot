@@ -1,8 +1,8 @@
 import { Application, Assets, Sprite, Container } from 'pixi.js';
 import { Machine } from "./src/containers/Machine";
-import { urls } from "./img";
+import { urls } from "./media";
 import { SpinButton } from "./src/containers/SpinButton";
-import { screen, SPIN_RESOLVE_DURATION_MS } from './src/config';
+import { screen, SPIN_DURATION_MS } from './src/config';
 import { Outcome, SpinOutcome } from './src/processors/Outcome';
 import { AppEvents, AppState, StateManager } from './src/StateManager';
 import { WinProcessor } from './src/processors/WinProcessor';
@@ -13,7 +13,6 @@ class MainScene extends Container {
     private _spinButton: SpinButton;
     private _stateManager: StateManager;
     private _winCounter: WinCounter;
-    private _currentOutcome: SpinOutcome;
 
     constructor() {
         super();
@@ -46,22 +45,24 @@ class MainScene extends Container {
         this._spinButton = spinButton;
         this._winCounter = winCounter;
 
-        this._currentOutcome = Outcome.resolve();
+        this._stateManager.currentOutcome = Outcome.resolve();
         this.displayResult();
         this._stateManager.on(AppEvents.SPIN_START, this.scheduleResolve.bind(this))
-        this._stateManager.on(AppEvents.SPIN_RESOLVING_END, this.displayResult.bind(this))
+        this._stateManager.on(AppEvents.SPIN_RESOLVING_START, async () => {
+            await this._machine.startResolve();
+            this.displayResult()
+        })
     }
 
     private scheduleResolve() {
-        this._stateManager.scheduleState(AppState.SPIN_RESOLVING, SPIN_RESOLVE_DURATION_MS);
-        this._currentOutcome = Outcome.resolve();
-        const win = new WinProcessor(this._currentOutcome);
+        this._stateManager.scheduleState(AppState.SPIN_RESOLVING, SPIN_DURATION_MS);
+        this._stateManager.currentOutcome = Outcome.resolve();
+        const win = new WinProcessor(this._stateManager.currentOutcome);
         const winAmount = win.winTotal;
         if (winAmount > 0) {
             const winHandler = () => {
                 this._stateManager.triggerWin(win.winningCombinations, winAmount);
                 this._stateManager.off(AppEvents.IDLE_START, winHandler);
-                this.displayResult();
             }
             this._stateManager.on(AppEvents.IDLE_START, winHandler);
         }
@@ -70,7 +71,7 @@ class MainScene extends Container {
 
 
     public displayResult() {
-        this._machine.displayResult(this._currentOutcome)
+        this._machine.displayResult()
     }
 
     update(dt) {

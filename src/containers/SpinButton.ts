@@ -34,7 +34,7 @@ export class SpinButton extends Container {
 
     private trySpin() {
         if (this._isDisabled === true) return;
-        this._stateManager.scheduleStateImmediate(AppState.SPIN, SPIN_DURATION_MS);
+        this._stateManager.setState(AppState.SPIN);
     }
 
     private disable() {

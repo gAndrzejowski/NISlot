@@ -1,4 +1,6 @@
 import { EventEmitter } from "pixi.js";
+import { SpinOutcome } from "./processors/Outcome";
+import { REEL_SIZE, REELS_COUNT } from "./config";
 
 export enum AppState {
     IDLE = 'idle',
@@ -18,7 +20,7 @@ export enum AppEvents {
 
 export type ScheduledStateChange = {
     state: AppState,
-    durationMs: number
+    delayMs: number
 }
 
 export class StateManager extends EventEmitter<AppEvents> {
@@ -26,20 +28,18 @@ export class StateManager extends EventEmitter<AppEvents> {
         super()
         this.stateQueue = [];
         this.currentState = AppState.IDLE;
+        this._currentOutcome = [[]]
     }
 
     stateQueue: Array<ScheduledStateChange>
     currentState: AppState
+    private _currentOutcome: SpinOutcome
 
-    public scheduleState(state: AppState, durationMs: number): void {
-        this.stateQueue.push({state, durationMs});
+    public scheduleState(state: AppState, delayMs: number): void {
+        this.stateQueue.push({state, delayMs});
     }
 
-    public scheduleStateImmediate(state: AppState, durationMs: number): void {
-        this.stateQueue = [{state, durationMs}];
-    }
-
-    private setState(state: AppState): void {
+    public setState(state: AppState): void {
         if (this.currentState === state) return;
 
         this.emit(`${this.currentState}End` as AppEvents);
@@ -47,27 +47,38 @@ export class StateManager extends EventEmitter<AppEvents> {
         this.emit(`${state}Start` as AppEvents);
     }
 
+    public set currentOutcome(outcome: SpinOutcome) {
+        if (outcome.length === REELS_COUNT && outcome.every(column => column.length === REEL_SIZE)) {
+            this._currentOutcome = outcome;
+        } else {
+            console.error(`
+                Bad dimensions for outcome: 
+                Expected ${REELS_COUNT}x${Array(REELS_COUNT).fill(REEL_SIZE)}
+                Received ${outcome.length}x${outcome.map(column => column.length).join(',')}
+            `)
+        }
+    }
+
+    public get currentOutcome(): SpinOutcome {
+        return [...this._currentOutcome].map(column => [...column])
+    }
+
     public triggerWin(winningCombinations: Set<string>, amount: number): void {
         this.emit(AppEvents.WIN_TRIGGERED, {winningCombinations, amount});
-        console.log('win triggered', winningCombinations, amount)
     }
 
     public update(dt) {
         if (this.stateQueue.length === 0) {
-            this.setState(AppState.IDLE);
             return;
         }
 
         const scheduledState = this.stateQueue[0].state;
-        this.setState(scheduledState)
 
-        this.stateQueue[0].durationMs -= dt;
-        if (this.stateQueue[0].durationMs <= 0) this.stateQueue.shift();
-    }
-
-    public override emit(event: AppEvents, ...rest): boolean {
-        console.log(event);
-        return super.emit(event, ...rest)
+        this.stateQueue[0].delayMs -= dt;
+        if (this.stateQueue[0].delayMs <= 0) {
+            this.stateQueue.shift();
+            this.setState(scheduledState)
+        }
     }
 
 }

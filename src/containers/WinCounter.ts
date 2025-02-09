@@ -29,9 +29,11 @@ export class WinCounter extends Container {
             text: this._currentValue.toFixed(2),
             style: {
               fontSize: 40,
-              letterSpacing: 5,
-              fontFamily: 'Helvetica',
-              fill: '#DAA520',
+              letterSpacing: 0,
+              fontFamily: 'gargle',
+              fill: 'yellow',
+              fontWeight: '800',
+              stroke: '#222222',
             }
         })
         this._counter.anchor.set(0.5);
@@ -41,8 +43,10 @@ export class WinCounter extends Container {
             text: BIG_WIN_TEXT,
             style: {
                 fontSize: 80,
-                fontFamily: 'Helvetica',
-                fill: '#DAA520'
+                fontFamily: 'gargle',
+                fill: 'yellow',
+                fontWeight: '800',
+                stroke: '#222222',
             }
         });
         this._winExclamation.anchor.set(0.5);
@@ -92,14 +96,12 @@ export class WinCounter extends Container {
 
     private displayWinIdle() {
         this._state = WinCounterStates.IDLE;
-        console.log('display win idle animation');
     }
 
     private clearWinCountup() {
         this._state = WinCounterStates.HIDDEN
         this.visible = false;
         this._currentValue = 0;
-        console.log('stopCountup')
     }
 
     public update(dt) {

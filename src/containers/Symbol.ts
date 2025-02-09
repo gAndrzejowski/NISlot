@@ -8,43 +8,42 @@ export type SymbolConfig = {
     spriteKey: string;
 }
 
+const SHOW_WIN_INTERVAL = 3000;
+const MAX_SCALING_CHANGE = 0.2;
+
 export class Symbol extends Container {
 
-    constructor({position, width, height, spriteKey}: SymbolConfig, stateManager: StateManager) {
+    constructor({position, width, height, spriteKey}: SymbolConfig) {
         super();
         this.position.set(position.x, position.y);
-        this._width = width;
-        this._height = height;
         this._sprite = Sprite.from(spriteKey);
         this._sprite.anchor.set(0.5);
         this._sprite.x = width/2;
         this._sprite.y = height/2;
         this.addChild(this._sprite);
-        this._stateManager = stateManager;
-        this._init();
+        this._isShowingWin = false;
     }
 
-    private _init() {
-        this._stateManager.on(AppEvents.WIN_TRIGGERED, this.showWin.bind(this))
-        this._stateManager.on(AppEvents.IDLE_END, this.stopShowWin.bind(this))
+    public showWin() {
+        this._isShowingWin = true;
     }
 
-    private showWin() {
-        console.log('show win');
+    public stopShowWin() {
+        this._isShowingWin = false;
+        this._showWinProgression = 0;
+        this._sprite.scale = 1;
     }
 
-    private stopShowWin() {
-        console.log('stop show win');
-    }
-
-    private _width: number;
-    private _height: number;
     private _sprite: Sprite;
+    private _isShowingWin: boolean;
+    private _showWinProgression: number;
 
-    private _stateManager: StateManager;
 
     update(dt) {
-
+        if (this._isShowingWin) {
+            this._showWinProgression += dt / SHOW_WIN_INTERVAL;
+            this._sprite.scale = 1 + Math.sin(Math.PI * 2 * this._showWinProgression) * MAX_SCALING_CHANGE;
+        }
     }
 
 }
