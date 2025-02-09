@@ -51,7 +51,7 @@ export class Reel extends Container {
         // this._currentSymbols[index].showWin()
     }
 
-    private clearWinningAnimation() { 
+    public clearWinningAnimation() { 
         // this._currentSymbols.forEach(sym => sym.stopShowWin())
     }
 

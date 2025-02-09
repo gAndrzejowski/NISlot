@@ -1,7 +1,6 @@
 import { Container, Graphics, Size} from "pixi.js";
 import { Reel } from "./Reel";
 import { REEL_HEIGHT_PX, REEL_SIZE, REEL_WIDTH_PX, REELS_COUNT, Sym } from "../config";
-import { SpinOutcome } from "../processors/Outcome";
 import { AppEvents, AppState, StateManager } from "../StateManager";
 
 export class Machine extends Container {
@@ -11,16 +10,19 @@ export class Machine extends Container {
         super();
         this._reelAreaDimensions = size;
         this._stateManager = stateManager;
+        this._winLines = [];
     }
 
     private _reels: Array<Reel>
     private _reelAreaDimensions: Size
     private _stateManager: StateManager
+    private _winLines: Array<Graphics>
 
     public init() {
         this._setupReels();
         this._stateManager.on(AppEvents.SPIN_START, this.startSpin.bind(this));
         this._stateManager.on(AppEvents.WIN_TRIGGERED, this.displayWin.bind(this));
+        this._stateManager.on(AppEvents.IDLE_END, this.clearWin.bind(this));
         
         const mask = new Graphics().rect(this.x, this.y - 50, this._reelAreaDimensions.width, this._reelAreaDimensions.height - 100).fill('red')
         this.setMask({mask})
@@ -29,6 +31,17 @@ export class Machine extends Container {
     private startSpin() {
         this._reels.forEach(reel => {
             reel.beginInfiniteSpin();
+        })
+    }
+
+    private clearWin() {
+        console.log('clear win')
+        this._winLines.forEach((line => {
+            this.removeChild(line);
+        }))
+        this._winLines = [];
+        this._reels.forEach(reel => {
+            reel.clearWinningAnimation();
         })
     }
 
@@ -93,6 +106,7 @@ export class Machine extends Container {
             const color = [Sym.HIGH1, Sym.HIGH2, Sym.HIGH3].includes(symbol) ? 'red' : 'yellow';
             winLine.stroke({color, width: 10});
             this.addChildAt(winLine, 0)
+            this._winLines.push(winLine);
         }
     }
 
