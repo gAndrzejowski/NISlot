@@ -24,7 +24,8 @@ export class Machine extends Container {
         this._stateManager.on(AppEvents.WIN_TRIGGERED, this.displayWin.bind(this));
         this._stateManager.on(AppEvents.IDLE_END, this.clearWin.bind(this));
         
-        const mask = new Graphics().rect(this.x, this.y - 50, this._reelAreaDimensions.width, this._reelAreaDimensions.height - 100).fill('red')
+        const { width, height} = this._reelAreaDimensions;
+        const mask = new Graphics().rect(this.x - width * 0.5, this.y - height * 0.5 + 57, width, height - 114).fill('red')
         this.setMask({mask})
     }
 
@@ -35,7 +36,6 @@ export class Machine extends Container {
     }
 
     private clearWin() {
-        console.log('clear win')
         this._winLines.forEach((line => {
             this.removeChild(line);
         }))
@@ -45,39 +45,31 @@ export class Machine extends Container {
         })
     }
 
-    private get center() {
-        return {
-            x: this._reelAreaDimensions.width / 2,
-            y: this._reelAreaDimensions.height / 2
-        }
-    }
-
     public async startResolve() {
         const outcome = this._stateManager.currentOutcome;
         await Promise.all(this._reels.map((reel, i) => reel.beginResolveWith(outcome[i])))
         this._stateManager.setState(AppState.IDLE);
     }
 
-    private symbolAddressToXY(symX, symY) {
-        return {
-            x: this.center.x + REEL_WIDTH_PX * (symX + 0.5 - REELS_COUNT / 2),
-            y: this.center.y + (REEL_HEIGHT_PX / REEL_SIZE) * (symY - REEL_SIZE / 2)
-        }
+    private symbolAddressToXY(symX: number, symY: number) {
+        const xy =  {
+            x: REEL_WIDTH_PX * (symX + 0.5 - REELS_COUNT / 2),
+            y: (REEL_HEIGHT_PX / REEL_SIZE) * (symY + 0.5 - REEL_SIZE / 2)
+        };
+        return xy;
     }
 
     private _setupReels() {
         const width = REEL_WIDTH_PX
         const height = REEL_HEIGHT_PX
 
-        const {center} = this;
-
         this._reels = [];
         for (let i = 0; i < REELS_COUNT; i++) {
             const reel =
                 new Reel(
                     {
-                        x: center.x + width * (i - REELS_COUNT / 2),
-                        y: center.y - 0.5 * height
+                        x: width * (0.5 + i - REELS_COUNT / 2),
+                        y: 0
                     },
                     { width, height }
                     , REEL_SIZE)
@@ -88,17 +80,15 @@ export class Machine extends Container {
 
     private displayWin({winningCombinations}) {
 
-        const {center} = this
+        const {position} = this
 
         for (let combination of winningCombinations) {
-            const [first, ...rest] = combination;
+            const [first, ...rest] = combination.split('').map(posX => Number.parseInt(posX));
             const firstPoint = this.symbolAddressToXY(0, first);
-            console.log(first, firstPoint);
             const winLine = new Graphics().moveTo(firstPoint.x, firstPoint.y);
             this._reels[0].startWinAnimationForSymbol(first);
             rest.forEach((symbol, index) => {
                 const point = this.symbolAddressToXY(index + 1, symbol);
-                console.log(symbol, point)
                 winLine.lineTo(point.x, point.y);
                 this._reels[index + 1].startWinAnimationForSymbol(symbol);
             });

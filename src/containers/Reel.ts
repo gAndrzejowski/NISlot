@@ -57,12 +57,17 @@ export class Reel extends Container {
 
     private readonly _symbolsCount: number;
 
-    private addSymbol(symbol: Sym) {
-        const ranSym = Sprite.from(symbol);
-        ranSym.anchor.set(0.5);
-        ranSym.position.set(this._areaWidth/2, this._areaHeight /2 + this.symbolHeight * (-1 - this._symbolsCount/2))
-        this.addChild(ranSym)
-        this._currentSymbols.unshift(ranSym);
+    private positionSymbolInRow(sym:Sprite, rowIndex: number) { // 0-based, -1 is used to put symbol outside normal area to prepare in spinning phase
+        sym.position.set(
+            0,
+            this.symbolHeight * (0.5 + rowIndex - this._symbolsCount / 2)
+        )
+    }
+
+    private addSymbolToTop(symbol: Sym) {
+        const sym = this.createSymbolFromAlias(symbol);
+        this.positionSymbolInRow(sym, -1);
+        this._currentSymbols.unshift(sym);
     }
 
     private createSymbolFromAlias(alias: Sym): Sprite {
@@ -77,10 +82,10 @@ export class Reel extends Container {
         this._spinPhase = 0;
         syms.forEach((sym, index) => {
             const symbol = this.createSymbolFromAlias(sym);
-            symbol.position.set(this._areaWidth/2, this._areaHeight / 2 + this.symbolHeight * (index - this._symbolsCount/2));
+            this.positionSymbolInRow(symbol, index);
             this._currentSymbols.push(symbol);
         });
-        this.addSymbol(getRandomSymbol());
+        this.addSymbolToTop(getRandomSymbol());
     }
 
     update(dt: number): void {
@@ -91,7 +96,7 @@ export class Reel extends Container {
                 this._spinPhase -= 1;
                 const removedSymbol = this._currentSymbols.pop();
                 this.removeChild(removedSymbol);
-                this.addSymbol(getRandomSymbol());
+                this.addSymbolToTop(getRandomSymbol());
             }
             this._currentSymbols.forEach(sym => {
                 sym.y += this.symbolHeight * phaseProgression;
@@ -106,7 +111,7 @@ export class Reel extends Container {
                 const removedSymbol = this._currentSymbols.pop();
                 this.removeChild(removedSymbol);
                 if (this._resolutionStack.length > 0) { 
-                    this.addSymbol(this._resolutionStack.pop());
+                    this.addSymbolToTop(this._resolutionStack.pop());
                 } else {
                     this.state = ReelState.IDLE;
                     this._resolutionComplete()

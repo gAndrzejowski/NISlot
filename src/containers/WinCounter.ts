@@ -7,15 +7,43 @@ enum WinCounterStates {
     IDLE
 }
 
-const BIG_WIN_THRESHOLD = 2;
-const SUPER_WIN_THRESHOLD = 5;
-const MEGA_WIN_THRESHOLD = 15;
+enum WinStages {
+    WIN = 0,
+    BIG_WIN,
+    SUPER_WIN,
+    MEGA_WIN
+}
+
+const WinTexts = {
+    [WinStages.WIN]: 'Win',
+    [WinStages.BIG_WIN]: 'Big Win!',
+    [WinStages.SUPER_WIN]: 'Super Win!!!',
+    [WinStages.MEGA_WIN]: 'Mega Win!!!!!1'
+}
+
+const WinCountupUnitTimes = {
+    [WinStages.WIN]: 500,
+    [WinStages.BIG_WIN]: 300,
+    [WinStages.SUPER_WIN]: 200,
+    [WinStages.MEGA_WIN]: 100
+}
+
+const WinTextScaleValues = {
+    [WinStages.WIN]: 0.6,
+    [WinStages.BIG_WIN]: 0.8,
+    [WinStages.SUPER_WIN]: 1.3,
+    [WinStages.MEGA_WIN]: 2
+}
+
+const WinThresholds = {
+    [WinStages.WIN]: 0,
+    [WinStages.BIG_WIN]: 2,
+    [WinStages.SUPER_WIN]: 5,
+    [WinStages.MEGA_WIN]: 15
+}
 const COUNTUP_UNIT_TIME = 500;
-export const COUNTER_WIDTH = 200;
-export const COUNTER_HEIGHT = 150;
-const BIG_WIN_TEXT = 'Big Win!';
-const SUPER_WIN_TEXT = 'Super Win!!!';
-const MEGA_WIN_TEXT = 'Mega Win!!!!!!1'
+const COUNTER_OFFSET = 50;
+const EXCLAMATION_OFFSET = -50;
 
 export class WinCounter extends Container {
 
@@ -25,33 +53,38 @@ export class WinCounter extends Container {
         this.visible = false;
         this._state = WinCounterStates.HIDDEN;
         this._stateManager = stateManager;
+        this._winStage = WinStages.WIN;
+        this._countupEnd = () => {};
         this._counter = new Text({
             text: this._currentValue.toFixed(2),
             style: {
-              fontSize: 40,
-              letterSpacing: 0,
+              fontSize: 80,
               fontFamily: 'gargle',
-              fill: 'yellow',
-              fontWeight: '800',
-              stroke: '#222222',
+              fill: '#fad64f',
+              stroke: {
+                color: "#222222",
+                width: 20,
+              }
             }
         })
         this._counter.anchor.set(0.5);
-        this._counter.position.set(COUNTER_WIDTH / 2, COUNTER_HEIGHT - this._counter.height / 2)
+        this._counter.position.set(0, COUNTER_OFFSET);
 
         this._winExclamation = new Text({
-            text: BIG_WIN_TEXT,
+            text: WinTexts[this._winStage],
             style: {
-                fontSize: 80,
+                fontSize: 120,
                 fontFamily: 'gargle',
-                fill: 'yellow',
-                fontWeight: '800',
-                stroke: '#222222',
+                fill: '#fad64f',
+                stroke: {
+                    color: '#222222',
+                    width: 20,
+                }
             }
         });
-        this._winExclamation.anchor.set(0.5);
-        this._winExclamation.position.set(COUNTER_WIDTH / 2, this._winExclamation.height / 2);
-        this._winExclamation.scale = 0;
+        this._winExclamation.anchor.set(0, 0.5);
+        this._winExclamation.position.set(-0.5 * this._counter.width, EXCLAMATION_OFFSET);
+        this._winExclamation.scale = WinTextScaleValues[this._winStage];
 
         this.addChild(this._counter);
         this.addChild(this._winExclamation);
@@ -66,6 +99,7 @@ export class WinCounter extends Container {
     private _winExclamation: Text;
     private _state: WinCounterStates;
     private _stateManager: StateManager;
+    private _winStage: WinStages;
     private _countupEnd: () => void;
 
     private async countupWin({amount}) {
@@ -82,16 +116,9 @@ export class WinCounter extends Container {
         })
     }
 
-    private displayBigWin() {
-
-    }
-
-    private displaySuperWin() {
-
-    }
-
-    private displayMegaWin() {
-
+    private setWinStage(stage: WinStages) {
+        this._winStage = stage;
+        this._winExclamation.text = WinTexts[stage];
     }
 
     private displayWinIdle() {
@@ -102,6 +129,24 @@ export class WinCounter extends Container {
         this._state = WinCounterStates.HIDDEN
         this.visible = false;
         this._currentValue = 0;
+        this._winExclamation.scale = WinTextScaleValues[WinStages.WIN]
+        this.setWinStage(WinStages.WIN)
+        this._counter.y = COUNTER_OFFSET;
+        this._counter.text = this._currentValue.toFixed(2);
+    }
+    
+    private interpolateScale(winStageCurrent: WinStages, valueToInterpolate: number) {
+
+        if (winStageCurrent === WinStages.MEGA_WIN) return WinTextScaleValues[WinStages.MEGA_WIN]
+
+        const bottomBound = WinThresholds[winStageCurrent];
+        const topBound = WinThresholds[winStageCurrent + 1];
+        const lowScale = WinTextScaleValues[winStageCurrent];
+        const highScale = WinTextScaleValues[winStageCurrent + 1]
+        const valueRange = topBound - bottomBound;
+        const scaleRange = highScale - lowScale;
+
+        return lowScale + scaleRange * (valueToInterpolate - bottomBound) / valueRange;
     }
 
     public update(dt) {
@@ -112,8 +157,12 @@ export class WinCounter extends Container {
                 this._countupEnd();
             }
             this._counter.text = this._currentValue.toFixed(2);
+            this._counter.y = COUNTER_OFFSET + Math.sqrt(this._currentValue) * 10;
+            this._winExclamation.scale = this.interpolateScale(this._winStage, this._currentValue);
+            if (this._currentValue >= WinThresholds[this._winStage + 1]) {
+                this.setWinStage(this._winStage + 1);
+            }
         }
-
     }
 
 }

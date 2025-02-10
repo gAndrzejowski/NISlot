@@ -3,10 +3,10 @@ import { Machine } from "./src/containers/Machine";
 import { urls } from "./media";
 import { SpinButton } from "./src/containers/SpinButton";
 import { screen, SPIN_DURATION_MS } from './src/config';
-import { Outcome, SpinOutcome } from './src/processors/Outcome';
+import { Outcome } from './src/processors/Outcome';
 import { AppEvents, AppState, StateManager } from './src/StateManager';
 import { WinProcessor } from './src/processors/WinProcessor';
-import { WinCounter, COUNTER_HEIGHT, COUNTER_WIDTH } from './src/containers/WinCounter';
+import { WinCounter } from './src/containers/WinCounter';
 
 class MainScene extends Container {
     private _machine: Machine;
@@ -28,7 +28,7 @@ class MainScene extends Container {
         this._stateManager = new StateManager();
 
         const machine = new Machine({ width: reels.width, height: reels.height }, this._stateManager);
-        machine.position.set(reels.position.x - reels.width * 0.5, reels.position.y - reels.height * 0.5);
+        machine.position.set(reels.position.x, reels.position.y);
         machine.init();
         this.addChild(machine);
 
@@ -38,7 +38,7 @@ class MainScene extends Container {
         spinButton.setEventHandlers();
 
         const winCounter = new WinCounter(this._stateManager);
-        winCounter.position.set(screen.width * 0.5 - COUNTER_WIDTH * 0.5, screen.height * 0.85 - COUNTER_HEIGHT * 0.5);
+        winCounter.position.set((screen.width * 0.5 - reels.width * 0.5) * 0.5, screen.height * 0.5 - reels.height * 0.5)
         this.addChild(winCounter);
 
         this._machine = machine;
@@ -55,10 +55,15 @@ class MainScene extends Container {
     }
 
     private scheduleResolve() {
+        let winAmount = 0;
+        let win: WinProcessor;
+
+        while (winAmount < 6) {
+            this._stateManager.currentOutcome = Outcome.resolve();
+            win = new WinProcessor(this._stateManager.currentOutcome);
+            winAmount = win.winTotal;
+        }
         this._stateManager.scheduleState(AppState.SPIN_RESOLVING, SPIN_DURATION_MS);
-        this._stateManager.currentOutcome = Outcome.resolve();
-        const win = new WinProcessor(this._stateManager.currentOutcome);
-        const winAmount = win.winTotal;
         if (winAmount > 0) {
             const winHandler = () => {
                 this._stateManager.triggerWin(win.winningCombinations, winAmount);
@@ -90,6 +95,7 @@ class Game {
     async initialize(app: Application, urls: any) {
         this.app = app;
         await Assets.load(urls);
+        console.log(urls);
     }
 
     setScene(scene: Container) {
