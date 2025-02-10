@@ -47,6 +47,7 @@ export class Reel extends Container {
         this._spinPhase = 0;
     }
 
+    // eslint-disable-next-line
     public startWinAnimationForSymbol(index: number) {
         // this._currentSymbols[index].showWin()
     }

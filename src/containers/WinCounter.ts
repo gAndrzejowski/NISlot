@@ -41,7 +41,6 @@ const WinThresholds = {
     [WinStages.SUPER_WIN]: 5,
     [WinStages.MEGA_WIN]: 15
 }
-const COUNTUP_UNIT_TIME = 500;
 const COUNTER_OFFSET = 50;
 const EXCLAMATION_OFFSET = -50;
 
@@ -151,7 +150,7 @@ export class WinCounter extends Container {
 
     public update(dt) {
         if (this._state === WinCounterStates.COUNTUP) {
-            this._currentValue += dt/COUNTUP_UNIT_TIME;
+            this._currentValue += dt/WinCountupUnitTimes[this._winStage]
             if (this._currentValue >= this._targetValue) {
                 this._currentValue = this._targetValue;
                 this._countupEnd();

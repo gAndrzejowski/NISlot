@@ -1,5 +1,4 @@
 import { Container, Point, Sprite } from "pixi.js";
-import { AppEvents, StateManager } from "../StateManager";
 
 export type SymbolConfig = {
     position: Point;

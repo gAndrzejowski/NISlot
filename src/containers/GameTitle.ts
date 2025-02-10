@@ -1,4 +1,4 @@
-import { type ColorSource, Container, Filter, FilterSystem, Text } from "pixi.js";
+import { type ColorSource, Container, Text} from "pixi.js";
 import FFO from "fontfaceobserver";
 
 const TITLE = "Super retro spinner";

@@ -1,6 +1,5 @@
 import {Assets, Container, Sprite, Texture} from "pixi.js";
 import { AppEvents, AppState, StateManager } from "../StateManager";
-import { SPIN_DURATION_MS } from "../config";
 
 export class SpinButton extends Container {
     constructor(stateManager: StateManager) {
@@ -62,5 +61,4 @@ export class SpinButton extends Container {
     private _button: Sprite;
     private _stateManager: StateManager;
 
-    update(dt: number): void {}
 }

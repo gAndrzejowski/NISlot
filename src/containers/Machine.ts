@@ -80,9 +80,7 @@ export class Machine extends Container {
 
     private displayWin({winningCombinations}) {
 
-        const {position} = this
-
-        for (let combination of winningCombinations) {
+        for (const combination of winningCombinations) {
             const [first, ...rest] = combination.split('').map(posX => Number.parseInt(posX));
             const firstPoint = this.symbolAddressToXY(0, first);
             const winLine = new Graphics().moveTo(firstPoint.x, firstPoint.y);

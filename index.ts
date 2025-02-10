@@ -1,5 +1,4 @@
 import { Application, Assets, Sprite, Container } from 'pixi.js';
-import FontFaceObserver from 'fontfaceobserver';
 import { Machine } from "./src/containers/Machine";
 import { urls } from "./media";
 import { SpinButton } from "./src/containers/SpinButton";
@@ -84,7 +83,6 @@ class MainScene extends Container {
 
     update(dt) {
         this._machine.update(dt);
-        this._spinButton.update(dt);
         this._stateManager.update(dt);
         this._winCounter.update(dt);
         this._gameTitle.update(dt);
@@ -96,7 +94,7 @@ class Game {
 
     constructor() {}
 
-    async initialize(app: Application, urls: any) {
+    async initialize(app: Application, urls: Array<string>) {
         this.app = app;
         await Assets.load(urls);
     }
