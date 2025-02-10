@@ -30,9 +30,9 @@ const WinCountupUnitTimes = {
 
 const WinTextScaleValues = {
     [WinStages.WIN]: 0.6,
-    [WinStages.BIG_WIN]: 0.8,
-    [WinStages.SUPER_WIN]: 1.3,
-    [WinStages.MEGA_WIN]: 2
+    [WinStages.BIG_WIN]: 0.7,
+    [WinStages.SUPER_WIN]: 0.9,
+    [WinStages.MEGA_WIN]: 1.3 
 }
 
 const WinThresholds = {
@@ -73,7 +73,7 @@ export class WinCounter extends Container {
         this._winExclamation = new Text({
             text: WinTexts[this._winStage],
             style: {
-                fontSize: 120,
+                fontSize: 100,
                 fontFamily: 'gargle',
                 fill: '#fad64f',
                 stroke: {

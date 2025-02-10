@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fontfaceobserver": "^2.3.0",
     "pixi.js": "^8.3.2"
   },
   "devDependencies": {
