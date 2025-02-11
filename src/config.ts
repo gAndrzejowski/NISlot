@@ -11,7 +11,7 @@ export const REEL_WIDTH_PX = 200;
 export const REEL_HEIGHT_PX = 578;
 
 export const SPIN_DURATION_MS = 1000;
-export const SPIN_INTERVAL = 50;
+export const SPIN_INTERVAL = 150;
 
 export enum Sym {
     HIGH1 = 'high1',
