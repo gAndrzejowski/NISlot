@@ -1,4 +1,4 @@
-import { Container, PointData, Size, Sprite } from "pixi.js";
+import { Container, PointData, Size } from "pixi.js";
 import { SPIN_INTERVAL, Sym } from '../config';
 import { getRandomSymbol } from "../processors/RandomSymbol";
 import { Symbol } from "./Symbol";
