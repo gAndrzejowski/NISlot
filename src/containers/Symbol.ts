@@ -1,11 +1,12 @@
-import { Container, Sprite } from "pixi.js";
-import { Sym } from "../config";
+import { Container, Sprite } from 'pixi.js';
+
+import { Sym } from '../config';
 
 const SHOW_WIN_INTERVAL = 2000;
 const MAX_SCALING_CHANGE = 0.2;
 const PROGRESSION_WITHOUT_SCALING = 0.4;
 
-export class Symbol extends Container {
+export class GameSymbol extends Container {
 
     constructor(spriteKey: Sym) {
         super();
@@ -15,6 +16,10 @@ export class Symbol extends Container {
         this._isShowingWin = false;
         this._showWinProgression = 0;
     }
+
+    private _sprite: Sprite;
+    private _isShowingWin: boolean;
+    private _showWinProgression: number;
 
     public showWin() {
         this._isShowingWin = true;
@@ -28,21 +33,15 @@ export class Symbol extends Container {
 
     static getScaleFromShowWinProgression(prog: number): number {
         if (prog <= PROGRESSION_WITHOUT_SCALING) return 1;
-        const subProgression = (prog - PROGRESSION_WITHOUT_SCALING)/(1-PROGRESSION_WITHOUT_SCALING);
+        const subProgression = (prog - PROGRESSION_WITHOUT_SCALING) / (1 - PROGRESSION_WITHOUT_SCALING);
         return 1 + Math.sin(Math.PI * subProgression) * MAX_SCALING_CHANGE;
     }
 
-    private _sprite: Sprite;
-    private _isShowingWin: boolean;
-    private _showWinProgression: number;
-
-
-    update(dt) {
+    update(dt: number): void {
         if (this._isShowingWin) {
             this._showWinProgression += dt / SHOW_WIN_INTERVAL;
             if (this._showWinProgression >= 1) this._showWinProgression -= 1;
-            this._sprite.scale.set(Symbol.getScaleFromShowWinProgression(this._showWinProgression));
+            this._sprite.scale.set(GameSymbol.getScaleFromShowWinProgression(this._showWinProgression));
         }
     }
-
 }

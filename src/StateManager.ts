@@ -1,6 +1,6 @@
-import { EventEmitter } from "pixi.js";
-import { SpinOutcome } from "./processors/Outcome";
-import { REEL_SIZE, REELS_COUNT } from "./config";
+import { EventEmitter } from 'pixi.js';
+import { SpinOutcome } from './processors/Outcome';
+import { REEL_SIZE, REELS_COUNT } from './config';
 
 export enum AppState {
     IDLE = 'idle',
@@ -36,7 +36,7 @@ export class StateManager extends EventEmitter<AppEvents> {
     private _currentOutcome: SpinOutcome
 
     public scheduleState(state: AppState, delayMs: number): void {
-        this.stateQueue.push({state, delayMs});
+        this.stateQueue.push({ state, delayMs });
     }
 
     public setState(state: AppState): void {
@@ -51,7 +51,7 @@ export class StateManager extends EventEmitter<AppEvents> {
         if (outcome.length === REELS_COUNT && outcome.every(column => column.length === REEL_SIZE)) {
             this._currentOutcome = outcome;
         } else {
-            console.error(`
+            throw new Error(`
                 Bad dimensions for outcome: 
                 Expected ${REELS_COUNT}x${Array(REELS_COUNT).fill(REEL_SIZE)}
                 Received ${outcome.length}x${outcome.map(column => column.length).join(',')}
@@ -64,10 +64,10 @@ export class StateManager extends EventEmitter<AppEvents> {
     }
 
     public triggerWin(winningCombinations: Set<string>, amount: number): void {
-        this.emit(AppEvents.WIN_TRIGGERED, {winningCombinations, amount});
+        this.emit(AppEvents.WIN_TRIGGERED, { winningCombinations, amount });
     }
 
-    public update(dt) {
+    public update(dt: number): void {
         if (this.stateQueue.length === 0) {
             return;
         }
@@ -80,5 +80,4 @@ export class StateManager extends EventEmitter<AppEvents> {
             this.setState(scheduledState)
         }
     }
-
 }

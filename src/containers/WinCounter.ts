@@ -1,5 +1,5 @@
-import { Container, Text } from "pixi.js";
-import { AppEvents, StateManager } from "../StateManager";
+import { Container, Text } from 'pixi.js';
+import { AppEvents, StateManager } from '../StateManager';
 
 enum WinCounterStates {
     HIDDEN,
@@ -32,7 +32,7 @@ const WinTextScaleValues = {
     [WinStages.WIN]: 0.6,
     [WinStages.BIG_WIN]: 0.7,
     [WinStages.SUPER_WIN]: 0.9,
-    [WinStages.MEGA_WIN]: 1.3 
+    [WinStages.MEGA_WIN]: 1.3
 }
 
 const WinThresholds = {
@@ -57,13 +57,13 @@ export class WinCounter extends Container {
         this._counter = new Text({
             text: this._currentValue.toFixed(2),
             style: {
-              fontSize: 80,
-              fontFamily: 'gargle',
-              fill: '#fad64f',
-              stroke: {
-                color: "#222222",
-                width: 20,
-              }
+                fontSize: 80,
+                fontFamily: 'gargle',
+                fill: '#fad64f',
+                stroke: {
+                    color: '#222222',
+                    width: 20,
+                }
             }
         })
         this._counter.anchor.set(0.5);
@@ -101,12 +101,12 @@ export class WinCounter extends Container {
     private _winStage: WinStages;
     private _countupEnd: () => void;
 
-    private async countupWin({amount}) {
-       this.visible = true;
-       this._state = WinCounterStates.COUNTUP;
-       this._targetValue = amount;
-       await this.waitForCountupEnd();
-       this.displayWinIdle();
+    private async countupWin({ amount }) {
+        this.visible = true;
+        this._state = WinCounterStates.COUNTUP;
+        this._targetValue = amount;
+        await this.waitForCountupEnd();
+        this.displayWinIdle();
     }
 
     private waitForCountupEnd(): Promise<void> {
@@ -133,7 +133,7 @@ export class WinCounter extends Container {
         this._counter.y = COUNTER_OFFSET;
         this._counter.text = this._currentValue.toFixed(2);
     }
-    
+
     private interpolateScale(winStageCurrent: WinStages, valueToInterpolate: number) {
 
         if (winStageCurrent === WinStages.MEGA_WIN) return WinTextScaleValues[WinStages.MEGA_WIN]
@@ -148,20 +148,22 @@ export class WinCounter extends Container {
         return lowScale + scaleRange * (valueToInterpolate - bottomBound) / valueRange;
     }
 
-    public update(dt) {
+    public update(dt: number): void {
         if (this._state === WinCounterStates.COUNTUP) {
-            this._currentValue += dt/WinCountupUnitTimes[this._winStage]
+            this._currentValue += dt / WinCountupUnitTimes[this._winStage]
+
             if (this._currentValue >= this._targetValue) {
                 this._currentValue = this._targetValue;
                 this._countupEnd();
             }
+
             this._counter.text = this._currentValue.toFixed(2);
             this._counter.y = COUNTER_OFFSET + Math.sqrt(this._currentValue) * 10;
             this._winExclamation.scale = this.interpolateScale(this._winStage, this._currentValue);
+
             if (this._currentValue >= WinThresholds[this._winStage + 1]) {
                 this.setWinStage(this._winStage + 1);
             }
         }
     }
-
 }

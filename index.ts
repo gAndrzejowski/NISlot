@@ -1,7 +1,7 @@
 import { Application, Assets, Sprite, Container } from 'pixi.js';
-import { Machine } from "./src/containers/Machine";
-import { urls } from "./media";
-import { SpinButton } from "./src/containers/SpinButton";
+import { Machine } from './src/containers/Machine';
+import { urls } from './media';
+import { SpinButton } from './src/containers/SpinButton';
 import { screen, SPIN_DURATION_MS } from './src/config';
 import { Outcome } from './src/processors/Outcome';
 import { AppEvents, AppState, StateManager } from './src/StateManager';
@@ -60,6 +60,10 @@ class MainScene extends Container {
         })
     }
 
+    public displayResult() {
+        this._machine.displayResult()
+    }
+
     private scheduleResolve() {
 
         this._stateManager.currentOutcome = Outcome.resolve();
@@ -76,12 +80,7 @@ class MainScene extends Container {
 
     }
 
-
-    public displayResult() {
-        this._machine.displayResult()
-    }
-
-    update(dt) {
+    public update(dt: number): void {
         this._machine.update(dt);
         this._stateManager.update(dt);
         this._winCounter.update(dt);

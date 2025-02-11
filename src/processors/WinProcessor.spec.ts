@@ -1,6 +1,6 @@
-import { Sym } from "./config"
-import { payoutStructure } from "./payoutStructure"
-import { WinProcessor } from "./WinProcessor"
+import { Sym } from '../config'
+import { payoutStructure } from '../payoutStructure'
+import { WinProcessor } from './WinProcessor'
 
 const NOWIN = [
     [Sym.LOW1, Sym.LOW3, Sym.HIGH2],

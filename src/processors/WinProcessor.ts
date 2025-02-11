@@ -1,6 +1,6 @@
-import { MIN_WINNING_COMBINATION_LENGTH, REELS_COUNT, Sym } from "../config";
-import { SpinOutcome } from "./Outcome";
-import { payoutStructure } from "../payoutStructure";
+import { MIN_WINNING_COMBINATION_LENGTH, REELS_COUNT, Sym } from '../config';
+import { SpinOutcome } from './Outcome';
+import { payoutStructure } from '../payoutStructure';
 
 export class WinProcessor {
 
@@ -21,7 +21,9 @@ export class WinProcessor {
             combinations: this._winningCombinations
         });
         rootNode.process();
-        this._winningCombinations = new Set([...this._winningCombinations].filter(com => com.length >= MIN_WINNING_COMBINATION_LENGTH));
+        this._winningCombinations = new Set([...this._winningCombinations].filter(
+            com => com.length >= MIN_WINNING_COMBINATION_LENGTH)
+        );
         return this._winningCombinations;
     }
 
@@ -35,7 +37,7 @@ export class WinProcessor {
     }
 
     public get winningCombinations() {
-        return this._winningCombinations ?? this.processWinningCombinations(); 
+        return this._winningCombinations ?? this.processWinningCombinations();
     }
 
     public get winTotal() {
@@ -47,51 +49,52 @@ export class WinProcessor {
 /* This is Node of the tree structure used to calculate winning paths */
 class CombinationNode {
 
-    constructor({outcome, combinations, parent = null, symbol = null, index = null, depth = 0}) {
-        this.outcome = outcome;
-        this.combinations = combinations;
-        this.parent = parent;
-        this.symbol = symbol;
-        this.index = index;
-        this.depth = depth;
-        this.children = [];
+    constructor({ outcome, combinations, parent = null, symbol = null, index = null, depth = 0 }) {
+        this._outcome = outcome;
+        this._combinations = combinations;
+        this._parent = parent;
+        this._symbol = symbol;
+        this._index = index;
+        this._depth = depth;
+        this._children = [];
     }
 
-    private outcome: SpinOutcome;
-    private combinations: Set<string>;
-    private parent: CombinationNode | null;
-    private symbol: Sym | null;
-    private index: number | null;
-    private depth: number;
-    private children: CombinationNode[];
+    private _outcome: SpinOutcome;
+    private _combinations: Set<string>;
+    private _parent: CombinationNode | null;
+    private _symbol: Sym | null;
+    private _index: number | null;
+    private _depth: number;
+    private _children: CombinationNode[];
 
     public get pathString() {
-        if (!this.parent) {
+        if (!this._parent) {
             return '';
         }
-        return `${this.parent.pathString}${this.index}`;
+        return `${this._parent.pathString}${this._index}`;
     }
 
     private canChildBeAttached(childSymbol: Sym) {
-        return !this.symbol || this.symbol === childSymbol;
+        return !this._symbol || this._symbol === childSymbol;
     }
 
     public process() {
-        const childCandidates = this.depth < REELS_COUNT ? this.outcome[this.depth] : []; // root node has depth 0 and its children are from 0th column and so on
+        // root node has depth 0 and its children are from 0th column and so on
+        const childCandidates = this._depth < REELS_COUNT ? this._outcome[this._depth] : [];
         childCandidates.forEach((symbol, index) => {
-            if (this.canChildBeAttached(symbol)) this.children.push(new CombinationNode({
-                outcome: this.outcome,
-                combinations: this.combinations,
+            if (this.canChildBeAttached(symbol)) this._children.push(new CombinationNode({
+                outcome: this._outcome,
+                combinations: this._combinations,
                 parent: this,
-                depth: this.depth + 1,
+                depth: this._depth + 1,
                 symbol,
                 index,
             }))
         })
-        if (this.children.length === 0) {
-            this.combinations.add(this.pathString);
+        if (this._children.length === 0) {
+            this._combinations.add(this.pathString);
         } else {
-            for (const child of this.children) {
+            for (const child of this._children) {
                 child.process();
             }
         }

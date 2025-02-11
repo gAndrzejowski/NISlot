@@ -15,11 +15,17 @@ export class SpinButton extends Container {
         this.addChild(button);
         this._button = button;
         this._stateManager = stateManager
-
-
     }
 
-    setEventHandlers() {
+    private _isDisabled: boolean;
+    private _buttonNormal: Texture;
+    private _buttonHover: Texture;
+    private _buttonDown: Texture;
+    private _buttonDisabled: Texture;
+    private _button: Sprite;
+    private _stateManager: StateManager;
+
+    public setEventHandlers() {
         this._button.eventMode = 'static';
         this._button.interactive = true;
         this._button.cursor = 'pointer';
@@ -50,15 +56,5 @@ export class SpinButton extends Container {
         if (this._isDisabled || this._button.texture === texture) return;
         this._button.texture = texture;
     }
-
-    private _isDisabled: boolean;
-
-    private _buttonNormal: Texture;
-    private _buttonHover: Texture;
-    private _buttonDown: Texture;
-    private _buttonDisabled: Texture;
-
-    private _button: Sprite;
-    private _stateManager: StateManager;
 
 }

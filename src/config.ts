@@ -22,3 +22,13 @@ export enum Sym {
     LOW3 = 'low3',
     LOW4 = 'low4',
 }
+
+export const symbols = [
+    Sym.HIGH1,
+    Sym.HIGH2,
+    Sym.HIGH3,
+    Sym.LOW1,
+    Sym.LOW2,
+    Sym.LOW3,
+    Sym.LOW4
+];
