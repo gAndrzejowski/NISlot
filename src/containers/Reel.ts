@@ -1,6 +1,7 @@
 import { Container, PointData, Size, Sprite } from "pixi.js";
 import { SPIN_INTERVAL, Sym } from '../config';
 import { getRandomSymbol } from "../processors/RandomSymbol";
+import { Symbol } from "./Symbol";
 
 enum ReelState {
     IDLE = 'idle',
@@ -13,22 +14,22 @@ export class Reel extends Container {
     constructor(position: PointData, size: Size, trueSymbolsCount: number) {
         super();
         this.position = position;
-        this._areaWidth = size.width;
         this._areaHeight = size.height;
         this._symbolsCount = trueSymbolsCount;
         this._currentSymbols = [];
         this._resolutionStack = [];
         this._spinPhase = 0;
         this.state = ReelState.IDLE;
+        this.winAnimationIn = [];
     }
 
-    private _areaWidth: number;
     private _areaHeight: number;
-    private _currentSymbols: Array<Sprite>;
+    private _currentSymbols: Array<Symbol>;
     private _spinPhase: number;
     private _resolutionStack: Array<Sym>;
     private _resolutionComplete: () => void;
     private state: ReelState;
+    private winAnimationIn: Array<number>;
 
     private get symbolHeight() {
         return this._areaHeight / this._symbolsCount;
@@ -47,44 +48,40 @@ export class Reel extends Container {
         this._spinPhase = 0;
     }
 
-    // eslint-disable-next-line
     public startWinAnimationForSymbol(index: number) {
-        // this._currentSymbols[index].showWin()
+        this._currentSymbols[index].showWin()
+        this.winAnimationIn.push(index);
     }
 
     public clearWinningAnimation() { 
-        // this._currentSymbols.forEach(sym => sym.stopShowWin())
+        this._currentSymbols.forEach(sym => sym.stopShowWin())
+        this.winAnimationIn = [];
     }
 
     private readonly _symbolsCount: number;
 
-    private positionSymbolInRow(sym:Sprite, rowIndex: number) { // 0-based, -1 is used to put symbol outside normal area to prepare in spinning phase
-        sym.position.set(
-            0,
-            this.symbolHeight * (0.5 + rowIndex - this._symbolsCount / 2)
-        )
+    private positionSymbolInRow(sym: Symbol, rowIndex: number) { // 0-based, -1 is used to put symbol outside normal area to prepare in spinning phase
+        sym.x = 0;
+        sym.y = this.symbolHeight * (0.5 + rowIndex - this._symbolsCount / 2)
+        this.addChild(sym);
     }
 
     private addSymbolToTop(symbol: Sym) {
-        const sym = this.createSymbolFromAlias(symbol);
+        const sym = new Symbol(symbol);
         this.positionSymbolInRow(sym, -1);
         this._currentSymbols.unshift(sym);
-    }
-
-    private createSymbolFromAlias(alias: Sym): Sprite {
-        const symbol = Sprite.from(alias);
-        symbol.anchor.set(0.5);
-        this.addChild(symbol)
-        return symbol;
     }
 
     public setSymbols(syms: Array<Sym>) {
         this.removeChildren();
         this._spinPhase = 0;
         syms.forEach((sym, index) => {
-            const symbol = this.createSymbolFromAlias(sym);
+            const symbol = new Symbol(sym);
             this.positionSymbolInRow(symbol, index);
             this._currentSymbols.push(symbol);
+            if (this.winAnimationIn.includes(index)) {
+                symbol.showWin();
+            }
         });
         this.addSymbolToTop(getRandomSymbol());
     }
@@ -123,5 +120,6 @@ export class Reel extends Container {
             })
         }
 
+        this._currentSymbols.forEach(sym => sym.update(dt));
     }
 }
